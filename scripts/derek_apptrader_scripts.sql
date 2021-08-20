@@ -72,3 +72,16 @@ SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.ap
 FROM play_store AS p
 INNER JOIN app_store AS a ON p.name = a.name
 ORDER BY p.name ASC, p.play_store_rating DESC;
+
+-- WITH app_content_ratings AS (SELECT name, rating,
+-- 	SUM(CASE WHEN content_rating = '4+' THEN 1 ELSE 0 END) AS everyone,
+-- 	SUM(CASE WHEN content_rating = '9+' THEN 1 ELSE 0 END) AS everyone9,
+-- 	SUM(CASE WHEN content_rating = '12+' THEN 1 ELSE 0 END) AS teen,
+-- 	SUM(CASE WHEN content_rating = '17+' THEN 1 ELSE 0 END) as mature
+-- FROM app_store_apps
+-- GROUP BY name, rating)
+
+-- SELECT ROUND(SUM(everyone)/COUNT(name), 2) AS everyone_pct, ROUND(SUM(everyone9)/COUNT(name), 2) AS everyone9_pct,
+-- ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct
+-- FROM app_content_ratings
+-- WHERE rating >= 4.5;
