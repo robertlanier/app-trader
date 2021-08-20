@@ -12,7 +12,8 @@ FROM play_store_apps;
 
 SELECT *
 FROM app_store_apps
-WHERE price <= 1.00 AND rating <= 4.0
+WHERE price <= 1.00
+	AND rating <= 4.0
 ORDER BY CAST(review_count AS int) DESC
 LIMIT 50;
 
@@ -36,3 +37,17 @@ WHERE CAST(price AS money) <= CAST(1.00 AS money)
 	AND review_count >= 444153
 ORDER BY rating DESC;
 
+SELECT DISTINCT name,
+	p.price AS playstore_price,
+	a.price AS appstore_price,
+	p.review_count AS playstore_review_count,
+	a.review_count AS appstore_review_count,
+	p.rating AS playstore_stars,
+	a.rating AS appstore_stars,
+	p.content_rating AS playstore_rating,
+	a.content_rating AS appstore_rating,
+	genres
+FROM app_store_apps AS a
+FULL JOIN play_store_apps AS p
+USING (name)
+ORDER BY name;
