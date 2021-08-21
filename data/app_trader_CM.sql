@@ -290,7 +290,7 @@ both_stores AS
 (SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, a.app_store_rating, p.play_store_content_rating, a.app_store_content_rating
 FROM play_store AS p
 INNER JOIN app_store AS a ON p.name = a.name
-ORDER BY p.name ASC, p.play_store_rating DESC)
+ORDER BY p.name ASC, p.play_store_rating DESC),
 
 
 /*SELECT play_store_content_rating, COUNT(name)
@@ -302,7 +302,23 @@ FROM both_stores
 GROUP BY app_store_content_rating*/
 
 
-SELECT name
+both_stores_filtered AS (SELECT name, play_store_rating, play_store_price, app_store_price, play_store_content_rating, app_store_genres
 FROM both_stores
-WHERE app_store_content_rating = '4+' AND 
+WHERE app_store_content_rating = '4+'
+GROUP BY name, play_store_rating, play_store_price, app_store_price, play_store_content_rating, app_store_genres
+ORDER BY play_store_rating DESC),
+
+both_filtered_final AS (SELECT b.name, p.install_count, b.play_store_rating, b.play_store_content_rating, b.app_store_genres
+FROM both_stores_filtered AS b
+LEFT JOIN play_store_apps AS p
+ON b.name = p.name
+GROUP BY b.name, p.install_count, b.play_store_rating, b.play_store_content_rating, b.app_store_genres
+ORDER BY CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric) ASC
+)
+
+SELECT name, play_store_rating, install_count, play_store_content_rating, app_store_genres
+FROM both_filtered_final
+ORDER BY CAST(REPLACE(REPLACE(install_count, '+', ''), ',', '') AS numeric) ASC
+LIMIT 25
+
 
