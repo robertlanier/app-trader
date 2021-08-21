@@ -14,7 +14,8 @@ from play_store_apps
 order by rating desc limit 100;
 
 
-select *
+select name
+where name ilike 'trek'
 from play_store_apps
 
 select *
@@ -217,26 +218,27 @@ having p.name count(*) >1;
 ------
 --select distinct (play_store_genres, app_store_genres)
 
-
+-- This one yields 39
 WITH app_store AS 
-(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating
+(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating, content_rating
 FROM app_store_apps
-WHERE price <= 1 AND rating >= 4.5
-GROUP BY name, primary_genre, price, rating
+WHERE price <= 1 AND rating >= 4.5 and content_rating = '4+'
+GROUP BY name, primary_genre, price, rating, content_rating
 ORDER BY name ASC),
 
 play_store AS 
-(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating
+(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, content_rating
 FROM play_store_apps
-WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5
-GROUP BY name, genres, price, rating
+WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5 and content_rating = 'Everyone'
+GROUP BY name, genres, price, rating, content_rating
 ORDER BY name ASC)
 
-SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, a.app_store_rating
+SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, a.app_store_rating, p.content_rating
 FROM play_store AS p
 INNER JOIN app_store AS a ON p.name = a.name
 ORDER BY p.name ASC, a.app_store_rating desc;
 
+---------
 
 WITH app_store AS 
 (SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating
@@ -276,5 +278,26 @@ ORDER BY price desc;
 
 ------
 
+WITH app_store AS 
+(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating, content_rating
+FROM app_store_apps
+WHERE price <= 1 AND rating >= 4.5 and content_rating = '4+'
+GROUP BY name, primary_genre, price, rating, content_rating
+ORDER BY name ASC),
 
+play_store AS 
+(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, content_rating
+FROM play_store_apps
+WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5 and content_rating = 'Everyone' CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric)
+GROUP BY name, genres, price, rating, content_rating
+ORDER BY name ASC)
+
+SELECT a.name,p.play_store_genres, a.app_store_genres,
+p.play_store_price, a.app_store_price, p.Play_store_rating, p.play_store_rating, 
+a.app_store_rating, a.content_rating, p.content_rating
+FROM play_store AS p
+INNER JOIN app_store AS a ON p.name = a.name
+ORDER BY p.name ASC, a.app_store_rating desc;
+
+CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric)
 
