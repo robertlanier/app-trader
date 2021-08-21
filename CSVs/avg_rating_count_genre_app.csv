@@ -1,0 +1,24 @@
+primary_genre,count,avg_rating,high_rated_total,pct_high_rated
+Productivity,178,4.01,91,0.51
+Music,138,3.98,64,0.46
+Photo & Video,349,3.8,184,0.53
+Business,57,3.75,26,0.46
+Health & Fitness,180,3.7,105,0.58
+Games,3862,3.69,1941,0.50
+Weather,72,3.6,26,0.36
+Shopping,122,3.54,53,0.43
+Reference,64,3.45,29,0.45
+Travel,81,3.38,29,0.36
+Education,453,3.38,158,0.35
+Medical,23,3.37,13,0.57
+Utilities,248,3.28,74,0.30
+Entertainment,535,3.25,144,0.27
+Food & Drink,63,3.18,21,0.33
+Social Networking,167,2.99,41,0.25
+News,75,2.98,14,0.19
+Sports,114,2.98,21,0.18
+Lifestyle,144,2.81,37,0.26
+Navigation,46,2.68,14,0.30
+Book,112,2.48,44,0.39
+Finance,104,2.43,24,0.23
+Catalogs,10,2.1,2,0.20

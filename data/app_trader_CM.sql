@@ -88,22 +88,163 @@ SELECT ROUND(SUM(everyone)/COUNT(name), 2) AS everyone_pct, ROUND(SUM(everyone9)
 ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct
 FROM app_content_ratings
 
+-- pct of content rating (app store)
+
+WITH app_content_ratings AS (SELECT name, rating,
+	SUM(CASE WHEN content_rating = '4+' THEN 1 ELSE 0 END) AS everyone,
+	SUM(CASE WHEN content_rating = '9+' THEN 1 ELSE 0 END) AS everyone9,
+	SUM(CASE WHEN content_rating = '12+' THEN 1 ELSE 0 END) AS teen,
+	SUM(CASE WHEN content_rating = '17+' THEN 1 ELSE 0 END) as mature
+FROM app_store_apps
+GROUP BY name, rating)
+
+SELECT ROUND(SUM(everyone)/COUNT(name), 2) AS everyone_pct, ROUND(SUM(everyone9)/COUNT(name), 2) AS everyone9_pct,
+ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct
+FROM app_content_ratings
+WHERE rating >= 4.5;
+
+-- pct of content rating where app is highly rated (app store)
+
+SELECT distinct content_rating, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating
+FROM app_store_apps
+GROUP BY content_rating
+ORDER BY avg_rating DESC;
+
+-- avg rating by content_rating (app store)
 
 
 
+SELECT distinct primary_genre, 
+COUNT(*) AS each_total,
+ROUND(count(*) * 100.0/ sum(count(*)) over (), 2) AS pct_of_apps
+FROM app_store_apps
+GROUP BY primary_genre;
 
+-- percent and count of apps by genre (app store)
 
+SELECT distinct primary_genre, 
+COUNT(*) AS each_total,
+ROUND(count(*) * 100.0/ sum(count(*)) over (), 2) AS pct_of_apps
+FROM app_store_apps
+GROUP BY primary_genre, rating
+HAVING rating >= 4.5;
 
-select distinct content_rating
-from app_store_apps
+-- count and percent of total apps by genre that are highly rated (app store)
 
+SELECT distinct primary_genre, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating
+FROM app_store_apps
+GROUP BY primary_genre
+ORDER BY avg_rating DESC;
 
-		
+-- returns avg rating by genre (app store)
 
+WITH play_store AS 
+(SELECT INITCAP(name), genres, price, rating, content_rating
+FROM play_store_apps
+GROUP BY name, genres, price, rating, content_rating
+ORDER BY name ASC)
 
-	
+SELECT distinct genres, 
+COUNT(*) AS each_total,
+ROUND(count(*) * 100.0/ sum(count(*)) over (), 2) AS pct_of_apps
+FROM play_store
+GROUP BY genres
 
+-- pct of apps by genre (play store)
 
+WITH play_store AS 
+(SELECT INITCAP(name), genres, price, rating, content_rating
+FROM play_store_apps
+GROUP BY name, genres, price, rating, content_rating
+ORDER BY name ASC)
+
+SELECT distinct genres, 
+COUNT(*) AS each_total,
+ROUND(count(*) * 100.0/ sum(count(*)) over (), 2) AS pct_of_apps
+FROM play_store
+GROUP BY genres, rating
+HAVING rating >= 4.5;
+
+-- count and percent of total apps by genre that are highly rated (play store). not very useful
+
+WITH play_content_ratings AS (SELECT name, rating,
+	SUM(CASE WHEN content_rating = 'Everyone' THEN 1 ELSE 0 END) AS everyone,
+	SUM(CASE WHEN content_rating = 'Everyone 10+' THEN 1 ELSE 0 END) AS everyone10,
+	SUM(CASE WHEN content_rating = 'Teen' THEN 1 ELSE 0 END) AS teen,
+	SUM(CASE WHEN content_rating = 'Mature 17+' THEN 1 ELSE 0 END) as mature,
+	SUM(CASE WHEN content_rating = 'Adults only 18+' THEN 1 ELSE 0 END) as adult,
+	SUM(CASE WHEN content_rating = 'Unrated' THEN 1 ELSE 0 END) as unrated
+FROM play_store_apps
+GROUP BY name, rating)
+
+SELECT ROUND(SUM(everyone)/COUNT(name), 2) AS everyone_pct, ROUND(SUM(everyone10)/COUNT(name), 2) AS everyone10_pct,
+ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct, ROUND(SUM(adult)/COUNT(name), 2) AS adult_pct,
+ROUND(SUM(unrated)/COUNT(name), 2) AS unrated_pct
+FROM play_content_ratings;
+
+-- pct of apps by content rating (play store)
+
+WITH play_content_ratings AS (SELECT name, rating,
+	SUM(CASE WHEN content_rating = 'Everyone' THEN 1 ELSE 0 END) AS everyone,
+	SUM(CASE WHEN content_rating = 'Everyone 10+' THEN 1 ELSE 0 END) AS everyone10,
+	SUM(CASE WHEN content_rating = 'Teen' THEN 1 ELSE 0 END) AS teen,
+	SUM(CASE WHEN content_rating = 'Mature 17+' THEN 1 ELSE 0 END) as mature,
+	SUM(CASE WHEN content_rating = 'Adults only 18+' THEN 1 ELSE 0 END) as adult,
+	SUM(CASE WHEN content_rating = 'Unrated' THEN 1 ELSE 0 END) as unrated
+FROM play_store_apps
+GROUP BY name, rating)
+
+SELECT ROUND(SUM(everyone)/COUNT(name), 2) AS everyone_pct, ROUND(SUM(everyone10)/COUNT(name), 2) AS everyone10_pct,
+ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct, ROUND(SUM(adult)/COUNT(name), 2) AS adult_pct,
+ROUND(SUM(unrated)/COUNT(name), 2) AS unrated_pct
+FROM play_content_ratings
+WHERE rating >= 4.5;
+
+-- highly rated percent content rating (play store)
+
+SELECT distinct content_rating, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating
+FROM play_store_apps
+GROUP BY content_rating
+ORDER BY avg_rating DESC;
+
+--avg rating content rating (play store)
+
+SELECT distinct p.content_rating, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating, subquery.high_rated_total
+FROM
+	(SELECT content_rating, COUNT(distinct name) AS high_rated_total
+	FROM play_store_apps
+	WHERE rating >= 4.5
+	GROUP BY content_rating) AS subquery
+JOIN play_store_apps AS P
+ON subquery.content_rating = p.content_rating
+GROUP BY subquery.content_rating, p.content_rating, subquery.high_rated_total
+ORDER BY avg_rating DESC;
+
+-- avg content rating AND count of highly rated apps (play store)
+
+SELECT distinct a.content_rating, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating, subquery.high_rated_total
+FROM
+	(SELECT content_rating, COUNT(distinct name) AS high_rated_total
+	FROM app_store_apps
+	WHERE rating >= 4.5
+	GROUP BY content_rating) AS subquery
+JOIN app_store_apps AS a
+ON subquery.content_rating = a.content_rating
+GROUP BY subquery.content_rating, a.content_rating, subquery.high_rated_total
+ORDER BY avg_rating DESC;	
+
+-- avg content rating AND count of highly rated apps (app store)
+
+SELECT distinct a.primary_genre, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating, subquery.high_rated_total
+FROM
+	(SELECT primary_genre, COUNT(distinct name) AS high_rated_total
+	FROM app_store_apps
+	WHERE rating >= 4.5
+	GROUP BY primary_genre) AS subquery
+JOIN app_store_apps AS a
+ON subquery.primary_genre = a.primary_genre
+GROUP BY subquery.primary_genre, a.primary_genre, subquery.high_rated_total
+ORDER BY avg_rating DESC;	
 
 
 
