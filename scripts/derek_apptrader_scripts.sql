@@ -78,18 +78,20 @@ app_store_2 AS
  FROM app_store
 )
 
+
+/*--removed from select
+-- p.play_store_genres, 
+-- a.app_store_genres, 
+-- ROUND(ROUND(p.play_store_rating/5,1)*5,1) AS rounded_play_store_rating, 
+-- a.app_store_rating, */
 SELECT 
-	p.name, 
-	p.play_store_genres, 
-	a.app_store_genres, 
-	ROUND(ROUND(p.play_store_rating/5,1)*5,1) AS rounded_play_store_rating, 
-	a.app_store_rating,	
+	p.name, 	
 	p.play_store_years_estimate, 
 	a.app_store_years_estimate,
 	p.play_store_app_lifetime_income,
-	p.play_store_app_lifetime_cost, -- only need one "cost" column, per assignment instructions
+	p.play_store_app_lifetime_cost,
 	a.app_store_app_lifetime_income,
-	a.app_store_app_lifetime_cost -- only need one "cost" column, per assignment instructions
+	a.app_store_app_lifetime_cost
 FROM play_store_2 AS p
 INNER JOIN app_store_2 AS a ON p.name = a.name
 ORDER BY p.name ASC, p.play_store_rating DESC;
