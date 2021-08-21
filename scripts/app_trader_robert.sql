@@ -66,6 +66,18 @@ FULL JOIN play_store_apps AS p
 USING (name)
 ORDER BY name;
 
+
+SELECT distinct a.primary_genre, COUNT(name), ROUND(AVG(rating), 2) AS avg_rating, subquery.high_rated_total
+FROM
+	(SELECT primary_genre, COUNT(distinct name) AS high_rated_total
+	FROM app_store_apps
+	WHERE rating >= 4.5
+	GROUP BY primary_genre) AS subquery
+JOIN app_store_apps AS a
+ON subquery.primary_genre = a.primary_genre
+GROUP BY subquery.primary_genre, a.primary_genre, subquery.high_rated_total
+ORDER BY avg_rating DESC;	
+
 ---------------
 -- First CTE --
 ---------------
