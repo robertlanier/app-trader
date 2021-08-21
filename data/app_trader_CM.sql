@@ -251,4 +251,58 @@ ORDER BY avg_rating DESC;
 
 
 
+WITH app_store AS 
+(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating, content_rating AS app_store_content_rating
+FROM app_store_apps
+WHERE price <= 1 AND rating >= 4.5
+GROUP BY name, primary_genre, price, rating, content_rating
+ORDER BY name ASC),
+
+play_store AS 
+(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, content_rating AS play_store_content_rating
+FROM play_store_apps
+WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5
+GROUP BY name, genres, price, rating, content_rating
+ORDER BY name ASC)
+
+SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, a.app_store_rating, p.play_store_content_rating, a.app_store_content_rating
+FROM play_store AS p
+INNER JOIN app_store AS a ON p.name = a.name
+ORDER BY p.name ASC, p.play_store_rating DESC;
+
+-- new matched on name query
+
+WITH app_store AS 
+(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating, content_rating AS app_store_content_rating
+FROM app_store_apps
+WHERE price <= 1 AND rating >= 4.5
+GROUP BY name, primary_genre, price, rating, content_rating
+ORDER BY name ASC),
+
+play_store AS 
+(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, content_rating AS play_store_content_rating
+FROM play_store_apps
+WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5
+GROUP BY name, genres, price, rating, content_rating
+ORDER BY name ASC),
+
+both_stores AS 
+(SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, a.app_store_rating, p.play_store_content_rating, a.app_store_content_rating
+FROM play_store AS p
+INNER JOIN app_store AS a ON p.name = a.name
+ORDER BY p.name ASC, p.play_store_rating DESC)
+
+
+/*SELECT play_store_content_rating, COUNT(name)
+FROM both_stores
+GROUP BY play_store_content_rating*/
+
+/*SELECT app_store_content_rating, COUNT(name)
+FROM both_stores
+GROUP BY app_store_content_rating*/
+
+
+SELECT name
+FROM both_stores
+WHERE app_store_content_rating = '4+' AND 
 
