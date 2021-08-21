@@ -55,22 +55,43 @@
 -- ORDER BY p.name ASC;
 
 WITH app_store AS 
-(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating
+(SELECT name, primary_genre AS app_store_genres, price AS app_store_price, rating AS app_store_rating, ROUND(((ROUND(ROUND(rating/5,1)*5,1))/.5),0) AS app_store_years_estimate
 FROM app_store_apps
 WHERE price <= 1 AND rating >= 4.5
 GROUP BY name, primary_genre, price, rating
 ORDER BY name ASC),
 
 play_store AS 
-(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating
+(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, ROUND(((ROUND(ROUND(rating/5,1)*5,1))/.5),0) AS play_store_years_estimate
 FROM play_store_apps
 WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5
 GROUP BY name, genres, price, rating
-ORDER BY name ASC)
+ORDER BY name ASC),
 
-SELECT p.name, p.play_store_genres, a.app_store_genres, p.play_store_price, a.app_store_price, p.play_store_rating, ROUND(ROUND(p.play_store_rating/5,1)*5,1) AS rounded_play_store_rating , a.app_store_rating
-FROM play_store AS p
-INNER JOIN app_store AS a ON p.name = a.name
+play_store_2 AS
+(SELECT *, ((play_store_years_estimate*12)*5000) AS play_store_app_lifetime_income, ((play_store_years_estimate*12)*1000) AS play_store_app_lifetime_cost
+ FROM play_store
+),
+
+app_store_2 AS
+(SELECT *, ((app_store_years_estimate*12)*5000) AS app_store_app_lifetime_income, ((app_store_years_estimate*12)*1000) AS app_store_app_lifetime_cost
+ FROM app_store
+)
+
+SELECT 
+	p.name, 
+	p.play_store_genres, 
+	a.app_store_genres, 
+	ROUND(ROUND(p.play_store_rating/5,1)*5,1) AS rounded_play_store_rating, 
+	a.app_store_rating,	
+	p.play_store_years_estimate, 
+	a.app_store_years_estimate,
+	p.play_store_app_lifetime_income,
+	p.play_store_app_lifetime_cost, -- only need one "cost" column, per assignment instructions
+	a.app_store_app_lifetime_income,
+	a.app_store_app_lifetime_cost -- only need one "cost" column, per assignment instructions
+FROM play_store_2 AS p
+INNER JOIN app_store_2 AS a ON p.name = a.name
 ORDER BY p.name ASC, p.play_store_rating DESC;
 
 -- WITH app_content_ratings AS (SELECT name, rating,
