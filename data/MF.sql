@@ -288,7 +288,7 @@ ORDER BY name ASC),
 play_store AS 
 (SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, content_rating
 FROM play_store_apps
-WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5 and content_rating = 'Everyone' CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric)
+WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5 and content_rating = 'Everyone' 
 GROUP BY name, genres, price, rating, content_rating
 ORDER BY name ASC)
 
@@ -299,5 +299,5 @@ FROM play_store AS p
 INNER JOIN app_store AS a ON p.name = a.name
 ORDER BY p.name ASC, a.app_store_rating desc;
 
-CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric)
+--AST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric)
 
