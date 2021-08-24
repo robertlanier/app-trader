@@ -62,10 +62,10 @@ GROUP BY name, primary_genre, price, rating
 ORDER BY name ASC),
 
 play_store AS 
-(SELECT name, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, ROUND(((ROUND(ROUND(rating/5,1)*5,1))/.5),0) AS play_store_years_estimate
+(SELECT name, install_count, genres AS play_store_genres, price AS play_store_price, rating AS play_store_rating, ROUND(((ROUND(ROUND(rating/5,1)*5,1))/.5),0) AS play_store_years_estimate
 FROM play_store_apps
 WHERE CAST(price AS money) <= CAST(1 AS money) AND rating >= 4.5
-GROUP BY name, genres, price, rating
+GROUP BY name, genres, price, rating, install_count
 ORDER BY name ASC),
 
 play_store_2 AS
@@ -85,13 +85,14 @@ app_store_2 AS
 -- ROUND(ROUND(p.play_store_rating/5,1)*5,1) AS rounded_play_store_rating, 
 -- a.app_store_rating, */
 SELECT 
-	p.name, 	
+	p.name,
 	p.play_store_years_estimate, 
 	a.app_store_years_estimate,
+	p.play_store_app_lifetime_cost + 10000 AS app_cost,
 	p.play_store_app_lifetime_income,
-	p.play_store_app_lifetime_cost,
 	a.app_store_app_lifetime_income,
-	a.app_store_app_lifetime_cost
+	a.app_store_app_lifetime_income + p.play_store_app_lifetime_income AS both_store_income
+	
 FROM play_store_2 AS p
 INNER JOIN app_store_2 AS a ON p.name = a.name
 ORDER BY p.name ASC, p.play_store_rating DESC;
