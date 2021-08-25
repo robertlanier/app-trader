@@ -86,7 +86,7 @@ app_store_2 AS
 -- a.app_store_rating, */
 SELECT 
 	p.name,
-	t.name,
+	p.install_count,
 	p.play_store_years_estimate, 
 	a.app_store_years_estimate,
 	p.play_store_app_lifetime_income,
