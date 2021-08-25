@@ -86,15 +86,21 @@ app_store_2 AS
 -- a.app_store_rating, */
 SELECT 
 	p.name,
+	t.name,
 	p.play_store_years_estimate, 
 	a.app_store_years_estimate,
-	p.play_store_app_lifetime_cost + 10000 AS app_cost,
 	p.play_store_app_lifetime_income,
 	a.app_store_app_lifetime_income,
-	a.app_store_app_lifetime_income + p.play_store_app_lifetime_income AS both_store_income
+	p.play_store_app_lifetime_cost + 10000 AS total_lifetime_cost,
+	a.app_store_app_lifetime_income + p.play_store_app_lifetime_income AS both_store_total_lifetime_income
 	
 FROM play_store_2 AS p
-INNER JOIN app_store_2 AS a ON p.name = a.name
+INNER JOIN app_store_2 AS a 
+ON p.name = a.name
+
+JOIN top_25 as t
+ON p.name = t.name
+
 ORDER BY p.name ASC, p.play_store_rating DESC;
 
 -- WITH app_content_ratings AS (SELECT name, rating,
