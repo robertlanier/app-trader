@@ -1,6 +1,21 @@
 content_rating,count,avg_rating,high_rated_total,pct_high_rated
 Adults only 18+,3,4.3,2,0.67
-Everyone 10+,414,4.26,88,0.21
-Teen,1208,4.23,275,0.23
 Everyone,8714,4.19,2099,0.24
+Teen,1208,4.23,275,0.23
+Everyone 10+,414,4.26,88,0.21
 Mature 17+,499,4.12,87,0.17
+,,,,
+,,,,
+content_rating,avg_rating,,,
+Everyone 10+,4.26,,,
+Teen,4.23,,,
+Everyone,4.19,,,
+Mature 17+,4.12,,,
+,,,,
+,,,,
+,,,,
+content_rating,pct_high_rated,,,
+Everyone,0.24,,,
+Teen,0.23,,,
+Everyone 10+,0.21,,,
+Mature 17+,0.17,,,
