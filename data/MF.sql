@@ -346,9 +346,9 @@ ORDER BY CAST(REPLACE(REPLACE(p.install_count, '+', ''), ',', '') AS numeric) AS
 )
 
 SELECT name, play_store_rating, install_count, play_store_content_rating, app_store_genres
-FROM both_filtered_final
+FROM both_filtered_final as top_25
 ORDER BY CAST(REPLACE(REPLACE(install_count, '+', ''), ',', '') AS numeric) ASC
-LIMIT 25
+LIMIT 25;
 
 ------- Dereks'sCode
 WITH app_store AS 
@@ -412,3 +412,13 @@ ORDER BY p.name ASC, p.play_store_rating DESC;
 -- ROUND(SUM(teen)/COUNT(name), 2) AS teen_pct, ROUND(SUM(mature)/COUNT(name), 2) AS mature_pct
 -- FROM app_content_ratings
 -- WHERE rating >= 4.5;
+
+SELECT round(avg(rating),2), genres
+from play_store_apps
+group by genres
+
+SELECT round(avg(rating),2), primary_genre
+from app_store_apps
+where primary_genre is not null
+group by primary_genre
+
